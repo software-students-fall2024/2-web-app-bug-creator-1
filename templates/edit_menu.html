@@ -26,6 +26,20 @@
         </div>
         <a href="{{ url_for('main_page') }}" class="back-button">Back to Dashboard</a>
     </div>
+
+    <!-- Add this modal at the end of the body -->
+    <div id="add-dish-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Add New Dish</h2>
+            <form id="add-dish-form">
+                <input type="text" id="new-dish-name" placeholder="Dish Name" required>
+                <input type="number" id="new-dish-price" placeholder="Price" step="0.01" required>
+                <button type="submit">Add Dish</button>
+            </form>
+        </div>
+    </div>
+
     <script src="{{url_for('static', filename='edit_menu.js')}}"></script>
 </body>
 </html>
