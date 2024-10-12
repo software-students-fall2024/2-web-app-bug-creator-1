@@ -130,9 +130,30 @@ def search_dishes():
 @login_required
 def add_dish():
     dish_data = request.json
+    
+    # Validate required fields
+    required_fields = ['category', 'dish_name', 'price']
+    for field in required_fields:
+        if field not in dish_data:
+            return jsonify({'success': False, 'message': f'{field} is required'}), 400
+    
     category = dish_data.pop('category')
+    
+    # Convert price to float
+    try:
+        dish_data['price'] = float(dish_data['price'])
+    except ValueError:
+        return jsonify({'success': False, 'message': 'Invalid price format'}), 400
+    
+    # Insert the new dish into the database
     result = db[category].insert_one(dish_data)
-    return jsonify({'success': True, 'id': str(result.inserted_id)})
+    
+    # Return the new dish details
+    new_dish = db[category].find_one({'_id': result.inserted_id})
+    new_dish['_id'] = str(new_dish['_id'])
+    new_dish['category'] = category
+    
+    return jsonify({'success': True, 'dish': new_dish})
 
 @app.route('/add_category', methods=['POST'])
 @login_required
