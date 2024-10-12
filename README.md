@@ -1,5 +1,7 @@
 # Web Application Exercise
 
+use pipenv install to get all packages.
+
 A little exercise to build a web application following an agile development process. See the [instructions](instructions.md) for more detail.
 
 ## Product vision statement
