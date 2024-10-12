@@ -17,10 +17,11 @@ document.addEventListener('DOMContentLoaded', function() {
                         <span class="dish-name">${dish.dish_name}</span>
                         <span class="dish-price">$${dish.price.toFixed(2)}</span>
                         <button class="edit-dish" data-id="${dish._id}">Edit</button>
-                        <button class="delete-dish" data-id="${dish._id}">Delete</button>
+                        <button class="delete-dish" data-id="${dish._id}" data-category="${category}">Delete</button>
                     `;
                     dishesContainer.appendChild(dishElement);
                 });
+                setupDeleteButtons();
             });
     }
 
@@ -40,6 +41,38 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    function setupDeleteButtons() {
+        const deleteButtons = document.querySelectorAll('.delete-dish');
+        deleteButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const dishId = this.dataset.id;
+                const category = this.dataset.category;
+                if (confirm('Are you sure you want to delete this dish?')) {
+                    fetch('/delete_dish', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ dish_id: dishId, category: category }),
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            this.closest('.dish-item').remove();
+                            alert('Dish deleted successfully!');
+                        } else {
+                            alert('Failed to delete dish. Please try again.');
+                        }
+                    })
+                    .catch((error) => {
+                        console.error('Error:', error);
+                        alert('An error occurred. Please try again.');
+                    });
+                }
+            });
+        });
+    }
+
     setupCategoryButtons();
 
     searchInput.addEventListener('input', function() {
@@ -56,7 +89,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             <span class="dish-price">$${dish.price.toFixed(2)}</span>
                             <span class="dish-category">${dish.category}</span>
                             <button class="edit-dish" data-id="${dish._id}">Edit</button>
-                            <button class="delete-dish" data-id="${dish._id}">Delete</button>
+                            <button class="delete-dish" data-id="${dish._id}" data-category="${dish.category}">Delete</button>
                         `;
                         dishesContainer.appendChild(dishElement);
                     });
@@ -104,4 +137,6 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
     });
+
+    setupDeleteButtons();
 });

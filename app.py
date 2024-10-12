@@ -158,5 +158,25 @@ def add_category():
 
     return jsonify({'success': True, 'message': 'Category added successfully'})
 
+@app.route('/delete_dish', methods=['POST'])
+@login_required
+def delete_dish():
+    dish_data = request.json
+    dish_id = dish_data.get('dish_id')
+    category = dish_data.get('category')
+    
+    if not dish_id or not category:
+        return jsonify({'success': False, 'message': 'Dish ID and category are required'}), 400
+
+    try:
+        result = db[category].delete_one({'_id': ObjectId(dish_id)})
+        if result.deleted_count == 1:
+            return jsonify({'success': True, 'message': 'Dish deleted successfully'})
+        else:
+            return jsonify({'success': False, 'message': 'Dish not found'}), 404
+    except Exception as e:
+        print(f"Error deleting dish: {e}")
+        return jsonify({'success': False, 'message': 'An error occurred while deleting the dish'}), 500
+
 if __name__=='__main__':
     app.run()
