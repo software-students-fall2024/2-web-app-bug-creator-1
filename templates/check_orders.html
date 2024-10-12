@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Check Today's Orders</title>
+    <link rel="stylesheet" href="{{url_for('static',filename='main_page.css')}}">
+</head>
+<body>
+    <div class="container">
+        <h1>Today's Orders</h1>
+        <p>Here you can view and manage today's orders.</p>
+        <!-- Add order list or table here in the future -->
+        <a href="{{ url_for('main_page') }}" class="dashboard-button">Back to Dashboard</a>
+    </div>
+</body>
+</html>

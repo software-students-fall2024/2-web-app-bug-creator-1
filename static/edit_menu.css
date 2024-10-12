@@ -1,0 +1,162 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f0f0f0;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+h1 {
+    text-align: center;
+    color: #333;
+}
+
+.search-add {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+#search {
+    flex-grow: 1;
+    margin-right: 10px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+#add-dish {
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.menu-content {
+    display: flex;
+    gap: 20px;
+}
+
+.categories {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.category-btn {
+    padding: 10px;
+    background-color: #f1f1f1;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    text-align: left;
+}
+
+.category-btn:hover, .category-btn.active {
+    background-color: #ddd;
+}
+
+.dishes {
+    flex: 3;
+    background-color: white;
+    border-radius: 4px;
+    padding: 20px;
+    min-height: 400px;
+}
+
+.back-button {
+    display: block;
+    width: 200px;
+    margin: 20px auto 0;
+    padding: 10px;
+    background-color: #f44336;
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 4px;
+}
+
+@media (max-width: 768px) {
+    .menu-content {
+        flex-direction: column;
+    }
+
+    .categories {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .category-btn {
+        flex: 1 1 calc(33.333% - 10px);
+        text-align: center;
+    }
+
+    .dishes {
+        min-height: 300px;
+    }
+}
+
+.dish-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+.dish-name {
+    flex-grow: 1;
+}
+
+.dish-price {
+    margin: 0 10px;
+}
+
+.dish-category {
+    margin-right: 10px;
+    font-style: italic;
+}
+
+.edit-dish, .delete-dish {
+    padding: 5px 10px;
+    margin-left: 5px;
+    cursor: pointer;
+}
+
+.edit-dish {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+}
+
+.delete-dish {
+    background-color: #f44336;
+    color: white;
+    border: none;
+    border-radius: 4px;
+}
+
+.add-category-btn {
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    text-align: center;
+}
+
+.add-category-btn:hover {
+    background-color: #45a049;
+}

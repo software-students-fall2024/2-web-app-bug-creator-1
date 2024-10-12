@@ -2,14 +2,20 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Main Page</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Restaurant Manager Dashboard</title>
     <link rel="stylesheet" href="{{url_for('static',filename='main_page.css')}}">
 </head>
 <body>
     <div class="container">
         <h1>Welcome, {{ current_user.username }}!</h1>
-        <p>This is the main page after successful login.</p>
+        <p>Restaurant Manager Dashboard</p>
+
+        <div class="button-container">
+            <a href="{{ url_for('check_orders') }}" class="dashboard-button">Check Today's Orders</a>
+            <a href="{{ url_for('edit_menu') }}" class="dashboard-button">Edit Menu</a>
+        </div>
+
         <a href="{{ url_for('logout') }}" class="logout-button">Logout</a>
 
         {% with messages = get_flashed_messages(with_categories=true) %}
@@ -24,4 +30,3 @@
     </div>
 </body>
 </html>
-

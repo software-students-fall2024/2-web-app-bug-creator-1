@@ -73,12 +73,90 @@ def login():
 def main_page():
     return render_template('main_page.html')
 
+@app.route('/check_orders')
+@login_required
+def check_orders():
+    # For now, this just renders a new template
+    return render_template('check_orders.html')
+
+@app.route('/edit_menu')
+@login_required
+def edit_menu():
+    # Get all categories from the database
+    categories = db.list_collection_names()
+    # Exclude system collections and other non-category collections
+    categories = [cat for cat in categories if not cat.startswith('system.') and cat != 'users' and cat != 'categories']
+    
+    # Convert underscores to spaces and capitalize for display
+    categories = [cat.replace('_', ' ').title() for cat in categories]
+    
+    return render_template('edit_menu.html', categories=categories)
+
 @app.route('/logout')
 @login_required
 def logout():
     logout_user()
     flash('You have been logged out', 'info')
     return redirect(url_for('login'))
+
+@app.route('/get_dishes/<category>')
+@login_required
+def get_dishes(category):
+    dishes = list(db[category].find({}, {'_id': 1, 'dish_name': 1, 'price': 1}))
+    for dish in dishes:
+        dish['_id'] = str(dish['_id'])
+    return jsonify(dishes)
+
+@app.route('/search_dishes')
+@login_required
+def search_dishes():
+    query = request.args.get('query', '')
+    
+    # Get all categories from the database
+    categories = db.list_collection_names()
+    # Exclude system collections and other non-category collections
+    categories = [cat for cat in categories if not cat.startswith('system.') and cat != 'users' and cat != 'categories']
+    
+    results = []
+    for category in categories:
+        dishes = list(db[category].find({'dish_name': {'$regex': query, '$options': 'i'}}, {'_id': 1, 'dish_name': 1, 'price': 1, 'category': 1}))
+        for dish in dishes:
+            dish['_id'] = str(dish['_id'])
+            dish['category'] = category
+            results.append(dish)
+    return jsonify(results)
+
+@app.route('/add_dish', methods=['POST'])
+@login_required
+def add_dish():
+    dish_data = request.json
+    category = dish_data.pop('category')
+    result = db[category].insert_one(dish_data)
+    return jsonify({'success': True, 'id': str(result.inserted_id)})
+
+@app.route('/add_category', methods=['POST'])
+@login_required
+def add_category():
+    category_data = request.json
+    category_name = category_data.get('category_name')
+    
+    if not category_name:
+        return jsonify({'success': False, 'message': 'Category name is required'}), 400
+
+    # Convert the category name to a valid collection name (lowercase, replace spaces with underscores)
+    collection_name = category_name.lower().replace(' ', '_')
+
+    # Check if the collection already exists
+    if collection_name in db.list_collection_names():
+        return jsonify({'success': False, 'message': 'Category already exists'}), 400
+
+    # Create a new collection for the category
+    db.create_collection(collection_name)
+
+    # Add the new category to a categories list (if you want to maintain a list of all categories)
+    db.categories.insert_one({'name': category_name, 'collection_name': collection_name})
+
+    return jsonify({'success': True, 'message': 'Category added successfully'})
 
 if __name__=='__main__':
     app.run()

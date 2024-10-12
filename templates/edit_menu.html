@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Menu</title>
+    <link rel="stylesheet" href="{{url_for('static',filename='edit_menu.css')}}">
+</head>
+<body>
+    <div class="container">
+        <h1>Edit Menu</h1>
+        <div class="search-add">
+            <input type="text" id="search" placeholder="Search dishes...">
+            <button id="add-dish">Add New Dish</button>
+        </div>
+        <div class="menu-content">
+            <div class="categories">
+                {% for category in categories %}
+                    <button class="category-btn" data-category="{{ category.lower().replace(' ', '_') }}">{{ category }}</button>
+                {% endfor %}
+                <button id="add-category" class="add-category-btn">Add Category</button>
+            </div>
+            <div class="dishes">
+                <!-- Dishes will be dynamically loaded here -->
+            </div>
+        </div>
+        <a href="{{ url_for('main_page') }}" class="back-button">Back to Dashboard</a>
+    </div>
+    <script src="{{url_for('static', filename='edit_menu.js')}}"></script>
+</body>
+</html>

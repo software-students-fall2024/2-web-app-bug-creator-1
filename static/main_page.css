@@ -1,65 +1,83 @@
 body {
     font-family: Arial, sans-serif;
-    background-color: #f0f0f0;
     margin: 0;
     padding: 0;
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    min-height: 100vh;
+    background-color: #f0f0f0;
 }
 
 .container {
     background-color: white;
-    padding: 2rem;
+    padding: 20px;
     border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    width: 80%;
-    max-width: 600px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    width: 90%;
+    max-width: 400px;
+    text-align: center;
 }
 
 h1 {
     color: #333;
-    margin-bottom: 1rem;
+    margin-bottom: 10px;
+}
+
+p {
+    color: #666;
+    margin-bottom: 20px;
+}
+
+.button-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;  /* This centers the buttons horizontally */
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.dashboard-button, .logout-button {
+    display: block;
+    width: 100%;
+    max-width: 250px;  /* Adjust this value as needed */
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    text-decoration: none;
+    text-align: center;
+}
+
+.dashboard-button {
+    background-color: #4CAF50;
+    color: white;
 }
 
 .logout-button {
-    display: inline-block;
-    background-color: #dc3545;
+    background-color: #f44336;
     color: white;
-    text-decoration: none;
-    padding: 0.5rem 1rem;
-    border-radius: 4px;
-    margin-top: 1rem;
-}
-
-.logout-button:hover {
-    background-color: #c82333;
+    margin: 0 auto;  /* This centers the logout button */
 }
 
 .messages {
     list-style-type: none;
     padding: 0;
-    margin-top: 1rem;
 }
 
 .messages li {
-    padding: 0.5rem;
-    border-radius: 4px;
-    margin-bottom: 0.5rem;
+    margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 5px;
 }
 
-.messages li.success {
-    background-color: #d4edda;
-    color: #155724;
+.success {
+    background-color: #dff0d8;
+    color: #3c763d;
 }
 
-.messages li.error {
-    background-color: #f8d7da;
-    color: #721c24;
-}
-
-.messages li.info {
-    background-color: #d1ecf1;
-    color: #0c5460;
+.error {
+    background-color: #f2dede;
+    color: #a94442;
 }
