@@ -2,6 +2,9 @@
 
 use pipenv install to get all packages.
 
+username: manager
+password: 12345
+
 A little exercise to build a web application following an agile development process. See the [instructions](instructions.md) for more detail.
 
 ## Product vision statement
