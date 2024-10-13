@@ -199,5 +199,39 @@ def delete_dish():
         print(f"Error deleting dish: {e}")
         return jsonify({'success': False, 'message': 'An error occurred while deleting the dish'}), 500
 
+@app.route('/get_dish/<category>/<dish_id>')
+@login_required
+def get_dish(category, dish_id):
+    dish = db[category].find_one({'_id': ObjectId(dish_id)})
+    if dish:
+        dish['_id'] = str(dish['_id'])
+        return jsonify(dish)
+    return jsonify({'success': False, 'message': 'Dish not found'}), 404
+
+@app.route('/edit_dish', methods=['POST'])
+@login_required
+def edit_dish():
+    dish_data = request.json
+    dish_id = dish_data.get('dish_id')
+    category = dish_data.get('category')
+    dish_name = dish_data.get('dish_name')
+    price = dish_data.get('price')
+    
+    if not all([dish_id, category, dish_name, price]):
+        return jsonify({'success': False, 'message': 'All fields are required'}), 400
+
+    try:
+        result = db[category].update_one(
+            {'_id': ObjectId(dish_id)},
+            {'$set': {'dish_name': dish_name, 'price': price}}
+        )
+        if result.modified_count == 1:
+            return jsonify({'success': True, 'message': 'Dish updated successfully'})
+        else:
+            return jsonify({'success': False, 'message': 'Dish not found or no changes made'}), 404
+    except Exception as e:
+        print(f"Error updating dish: {e}")
+        return jsonify({'success': False, 'message': 'An error occurred while updating the dish'}), 500
+
 if __name__=='__main__':
-    app.run()
+    app.run(debug=True)

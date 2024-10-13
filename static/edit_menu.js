@@ -5,10 +5,16 @@ document.addEventListener('DOMContentLoaded', function() {
     const addDishButton = document.getElementById('add-dish');
     const addCategoryButton = document.getElementById('add-category');
     const addDishModal = document.getElementById('add-dish-modal');
+    const addCategoryModal = document.getElementById('add-category-modal');
     const addDishForm = document.getElementById('add-dish-form');
-    const cancelAddDish = document.getElementById('cancel-add-dish');
-
+    const addCategoryForm = document.getElementById('add-category-form');
+    const deleteModal = document.getElementById('delete-dish-modal');
+    const confirmDeleteBtn = document.getElementById('confirm-delete');
+    const cancelDeleteBtn = document.getElementById('cancel-delete');
     let currentCategory = null;
+    let currentDishToDelete = null;
+    const editDishModal = document.getElementById('edit-dish-modal');
+    const editDishForm = document.getElementById('edit-dish-form');
 
     function loadDishes(category) {
         fetch(`/get_dishes/${category}`)
@@ -21,12 +27,13 @@ document.addEventListener('DOMContentLoaded', function() {
                     dishElement.innerHTML = `
                         <span class="dish-name">${dish.dish_name}</span>
                         <span class="dish-price">$${dish.price.toFixed(2)}</span>
-                        <button class="edit-dish" data-id="${dish._id}">Edit</button>
+                        <button class="edit-dish" data-id="${dish._id}" data-category="${category}">Edit</button>
                         <button class="delete-dish" data-id="${dish._id}" data-category="${category}">Delete</button>
                     `;
                     dishesContainer.appendChild(dishElement);
                 });
                 setupDeleteButtons();
+                setupEditButtons();
             });
     }
 
@@ -53,28 +60,27 @@ document.addEventListener('DOMContentLoaded', function() {
             button.addEventListener('click', function() {
                 const dishId = this.dataset.id;
                 const category = this.dataset.category;
-                if (confirm('Are you sure you want to delete this dish?')) {
-                    fetch('/delete_dish', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({ dish_id: dishId, category: category }),
-                    })
+                currentDishToDelete = { dishId, category };
+                deleteModal.style.display = 'block';
+            });
+        });
+    }
+
+    function setupEditButtons() {
+        const editButtons = document.querySelectorAll('.edit-dish');
+        editButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const dishId = this.dataset.id;
+                const category = this.dataset.category;
+                fetch(`/get_dish/${category}/${dishId}`)
                     .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            this.closest('.dish-item').remove();
-                            alert('Dish deleted successfully!');
-                        } else {
-                            alert('Failed to delete dish. Please try again.');
-                        }
-                    })
-                    .catch((error) => {
-                        console.error('Error:', error);
-                        alert('An error occurred. Please try again.');
+                    .then(dish => {
+                        document.getElementById('edit-dish-name').value = dish.dish_name;
+                        document.getElementById('edit-dish-price').value = dish.price;
+                        document.getElementById('edit-dish-id').value = dish._id;
+                        document.getElementById('edit-dish-category').value = category;
+                        editDishModal.style.display = 'block';
                     });
-                }
             });
         });
     }
@@ -99,7 +105,10 @@ document.addEventListener('DOMContentLoaded', function() {
                         `;
                         dishesContainer.appendChild(dishElement);
                     });
+                    setupDeleteButtons();
                 });
+        } else if (currentCategory) {
+            loadDishes(currentCategory);
         }
     });
 
@@ -111,15 +120,16 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    const closeButton = document.getElementsByClassName('close')[0];
-
-    closeButton.addEventListener('click', function() {
-        addDishModal.style.display = 'none';
+    const closeButtons = document.getElementsByClassName('close');
+    Array.from(closeButtons).forEach(button => {
+        button.addEventListener('click', function() {
+            this.closest('.modal').style.display = 'none';
+        });
     });
 
     window.addEventListener('click', function(event) {
-        if (event.target == addDishModal) {
-            addDishModal.style.display = 'none';
+        if (event.target.classList.contains('modal')) {
+            event.target.style.display = 'none';
         }
     });
 
@@ -147,21 +157,8 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                // Close the modal
                 addDishModal.style.display = 'none';
-                
-                // Add the new dish to the dishes container
-                const dishElement = document.createElement('div');
-                dishElement.className = 'dish-item';
-                dishElement.innerHTML = `
-                    <span class="dish-name">${data.dish.dish_name}</span>
-                    <span class="dish-price">$${data.dish.price.toFixed(2)}</span>
-                    <button class="edit-dish" data-id="${data.dish._id}">Edit</button>
-                    <button class="delete-dish" data-id="${data.dish._id}">Delete</button>
-                `;
-                dishesContainer.appendChild(dishElement);
-                
-                // Reset the form
+                loadDishes(currentCategory);
                 addDishForm.reset();
             } else {
                 alert('Failed to add dish: ' + data.message);
@@ -174,39 +171,106 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     addCategoryButton.addEventListener('click', function() {
-        const categoryName = prompt("Enter the name of the new category:");
-        if (categoryName) {
-            fetch('/add_category', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ category_name: categoryName }),
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // Create and add the new category button
-                    const newButton = document.createElement('button');
-                    newButton.className = 'category-btn';
-                    newButton.textContent = categoryName;
-                    newButton.dataset.category = categoryName.toLowerCase().replace(' ', '_');
-                    categoriesContainer.insertBefore(newButton, addCategoryButton);
-                    
-                    // Setup the new button
-                    setupCategoryButtons();
-                    
-                    alert('Category added successfully!');
-                } else {
-                    alert('Failed to add category. Please try again.');
-                }
-            })
-            .catch((error) => {
-                console.error('Error:', error);
-                alert('An error occurred. Please try again.');
-            });
+        addCategoryModal.style.display = 'block';
+    });
+
+    addCategoryForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const categoryName = document.getElementById('new-category-name').value;
+
+        fetch('/add_category', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ category_name: categoryName }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const newButton = document.createElement('button');
+                newButton.className = 'category-btn';
+                newButton.textContent = categoryName;
+                newButton.dataset.category = categoryName.toLowerCase().replace(' ', '_');
+                categoriesContainer.insertBefore(newButton, addCategoryButton);
+                setupCategoryButtons();
+                addCategoryModal.style.display = 'none';
+                addCategoryForm.reset();
+            } else {
+                alert('Failed to add category: ' + data.message);
+            }
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+            alert('An error occurred. Please try again.');
+        });
+    });
+
+    confirmDeleteBtn.addEventListener('click', () => {
+        if (currentDishToDelete) {
+            deleteDish(currentDishToDelete.dishId, currentDishToDelete.category);
+            deleteModal.style.display = 'none';
         }
     });
 
-    setupDeleteButtons();
+    cancelDeleteBtn.addEventListener('click', () => {
+        deleteModal.style.display = 'none';
+    });
+
+    function deleteDish(dishId, category) {
+        fetch('/delete_dish', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ dish_id: dishId, category: category }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                loadDishes(category);
+            } else {
+                alert('Failed to delete dish: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while deleting the dish');
+        });
+    }
+
+    editDishForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const dishId = document.getElementById('edit-dish-id').value;
+        const category = document.getElementById('edit-dish-category').value;
+        const dishName = document.getElementById('edit-dish-name').value;
+        const dishPrice = parseFloat(document.getElementById('edit-dish-price').value);
+
+        fetch('/edit_dish', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                dish_id: dishId,
+                category: category,
+                dish_name: dishName,
+                price: dishPrice
+            }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                editDishModal.style.display = 'none';
+                loadDishes(category);
+                editDishForm.reset();
+            } else {
+                alert('Failed to edit dish: ' + data.message);
+            }
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+            alert('An error occurred while editing the dish');
+        });
+    });
 });
