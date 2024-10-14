@@ -254,7 +254,7 @@ def delete_category():
         db[category].drop()
         
         # Remove the category from the categories list (if you're maintaining one)
-        db.categories.delete_one({'collection_name': category})
+        # db.categories.delete_one({'collection_name': category})
 
         return jsonify({'success': True, 'message': 'Category deleted successfully'})
     except Exception as e:

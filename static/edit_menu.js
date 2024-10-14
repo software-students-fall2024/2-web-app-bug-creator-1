@@ -293,7 +293,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     currentCategory = null;
                     dishesContainer.innerHTML = '';
                 }
-                alert('Category deleted successfully');
             } else {
                 alert('Failed to delete category: ' + data.message);
             }
