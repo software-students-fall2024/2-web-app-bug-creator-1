@@ -15,6 +15,10 @@ document.addEventListener('DOMContentLoaded', function() {
     let currentDishToDelete = null;
     const editDishModal = document.getElementById('edit-dish-modal');
     const editDishForm = document.getElementById('edit-dish-form');
+    const deleteCategoryButton = document.getElementById('delete-category');
+    const deleteCategoryModal = document.getElementById('delete-category-modal');
+    const categoryList = document.getElementById('category-list');
+    const confirmDeleteCategoryBtn = document.getElementById('confirm-delete-category');
 
     function loadDishes(category) {
         fetch(`/get_dishes/${category}`)
@@ -236,6 +240,67 @@ document.addEventListener('DOMContentLoaded', function() {
         .catch(error => {
             console.error('Error:', error);
             alert('An error occurred while deleting the dish');
+        });
+    }
+
+    deleteCategoryButton.addEventListener('click', function() {
+        fetch('/get_categories')
+            .then(response => response.json())
+            .then(categories => {
+                categoryList.innerHTML = '';
+                categories.forEach(category => {
+                    if (category !== 'users') {
+                        const categoryElement = document.createElement('div');
+                        categoryElement.innerHTML = `
+                            <input type="radio" name="category" value="${category}" id="${category}">
+                            <label for="${category}">${category}</label>
+                        `;
+                        categoryList.appendChild(categoryElement);
+                    }
+                });
+                deleteCategoryModal.style.display = 'block';
+            });
+    });
+
+    confirmDeleteCategoryBtn.addEventListener('click', function() {
+        const selectedCategory = document.querySelector('input[name="category"]:checked');
+        if (selectedCategory) {
+            deleteCategory(selectedCategory.value);
+        } else {
+            alert('Please select a category to delete');
+        }
+    });
+
+    function deleteCategory(category) {
+        fetch('/delete_category', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ category: category }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                deleteCategoryModal.style.display = 'none';
+                // Remove the deleted category button
+                const categoryBtn = document.querySelector(`.category-btn[data-category="${category}"]`);
+                if (categoryBtn) {
+                    categoryBtn.remove();
+                }
+                // Reset currentCategory if it was the deleted one
+                if (currentCategory === category) {
+                    currentCategory = null;
+                    dishesContainer.innerHTML = '';
+                }
+                alert('Category deleted successfully');
+            } else {
+                alert('Failed to delete category: ' + data.message);
+            }
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+            alert('An error occurred while deleting the category');
         });
     }
 

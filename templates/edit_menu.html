@@ -19,6 +19,7 @@
                     <button class="category-btn" data-category="{{ category.lower().replace(' ', '_') }}">{{ category }}</button>
                 {% endfor %}
                 <button id="add-category" class="add-category-btn">Add Category</button>
+                <button id="delete-category" class="delete-category-btn">Delete Category</button>
             </div>
             <div class="dishes">
                 <!-- Dishes will be dynamically loaded here -->
@@ -75,6 +76,17 @@
                 <input type="hidden" id="edit-dish-category">
                 <button type="submit">Save Changes</button>
             </form>
+        </div>
+    </div>
+
+    <!-- Add this new modal for deleting a category -->
+    <div id="delete-category-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Delete Category</h2>
+            <p>Select a category to delete:</p>
+            <div id="category-list"></div>
+            <button id="confirm-delete-category">Delete Selected Category</button>
         </div>
     </div>
 
