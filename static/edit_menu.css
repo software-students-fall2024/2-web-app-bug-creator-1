@@ -304,3 +304,26 @@ h1 {
 #edit-dish-form button:hover {
     background-color: #45a049;
 }
+
+.back-button, .delete-category-btn {
+    display: block;
+    width: 200px;
+    margin: 20px auto 0;
+    padding: 10px;
+    background-color: #f44336;
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+}
+
+.delete-category-btn {
+    background-color: #f44336;
+    margin-top: 10px;
+}
+
+.delete-category-btn:hover {
+    background-color: #d32f2f;
+}

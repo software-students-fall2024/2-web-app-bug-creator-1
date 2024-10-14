@@ -175,7 +175,7 @@ def add_category():
     db.create_collection(collection_name)
 
     # Add the new category to a categories list (if you want to maintain a list of all categories)
-    db.categories.insert_one({'name': category_name, 'collection_name': collection_name})
+    # db.categories.insert_one({'name': category_name, 'collection_name': collection_name})
 
     return jsonify({'success': True, 'message': 'Category added successfully'})
 
@@ -232,6 +232,34 @@ def edit_dish():
     except Exception as e:
         print(f"Error updating dish: {e}")
         return jsonify({'success': False, 'message': 'An error occurred while updating the dish'}), 500
+
+@app.route('/get_categories')
+@login_required
+def get_categories():
+    categories = db.list_collection_names()
+    categories = [cat for cat in categories if not cat.startswith('system.') and cat != 'users']
+    return jsonify(categories)
+
+@app.route('/delete_category', methods=['POST'])
+@login_required
+def delete_category():
+    category_data = request.json
+    category = category_data.get('category')
+    
+    if not category:
+        return jsonify({'success': False, 'message': 'Category name is required'}), 400
+
+    try:
+        # Drop the collection
+        db[category].drop()
+        
+        # Remove the category from the categories list (if you're maintaining one)
+        # db.categories.delete_one({'collection_name': category})
+
+        return jsonify({'success': True, 'message': 'Category deleted successfully'})
+    except Exception as e:
+        print(f"Error deleting category: {e}")
+        return jsonify({'success': False, 'message': 'An error occurred while deleting the category'}), 500
 
 if __name__=='__main__':
     app.run(debug=True)
