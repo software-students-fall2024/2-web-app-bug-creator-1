@@ -175,7 +175,7 @@ def add_category():
     db.create_collection(collection_name)
 
     # Add the new category to a categories list (if you want to maintain a list of all categories)
-    db.categories.insert_one({'name': category_name, 'collection_name': collection_name})
+    # db.categories.insert_one({'name': category_name, 'collection_name': collection_name})
 
     return jsonify({'success': True, 'message': 'Category added successfully'})
 
