@@ -79,13 +79,18 @@ def check_orders():
     # For now, this just renders a new template
     return render_template('check_orders.html')
 
+@app.route('/edit_menu_all')
+@login_required
+def edit_menu_all():
+    return render_template('edit_menu_all.html')
+
 @app.route('/edit_menu')
 @login_required
 def edit_menu():
     # Get all categories from the database
     categories = db.list_collection_names()
     # Exclude system collections and other non-category collections
-    categories = [cat for cat in categories if not cat.startswith('system.') and cat != 'users' and cat != 'categories']
+    categories = [cat for cat in categories if not cat.startswith('system.') and cat != 'users' and cat != 'categories' and cat != 'customer_orders']
     
     # Convert underscores to spaces and capitalize for display
     categories = [cat.replace('_', ' ').title() for cat in categories]
@@ -260,6 +265,23 @@ def delete_category():
     except Exception as e:
         print(f"Error deleting category: {e}")
         return jsonify({'success': False, 'message': 'An error occurred while deleting the category'}), 500
+
+@app.route('/get_all_dishes')
+@login_required
+def get_all_dishes():
+    all_dishes = []
+    categories = db.list_collection_names()
+    excluded_collections = ['users', 'orders', 'customer_orders']
+    
+    for category in categories:
+        if category not in excluded_collections and not category.startswith('system.'):
+            dishes = list(db[category].find({}, {'_id': 1, 'dish_name': 1, 'price': 1}))
+            for dish in dishes:
+                dish['_id'] = str(dish['_id'])
+                dish['category'] = category
+                all_dishes.append(dish)
+    
+    return jsonify(all_dishes)
 
 if __name__=='__main__':
     app.run(debug=True)
