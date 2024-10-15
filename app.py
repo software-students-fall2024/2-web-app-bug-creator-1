@@ -104,11 +104,6 @@ def check_orders():
 def edit_menu_all():
     return render_template('edit_menu_all.html')
 
-@app.route('/edit_menu_all')
-@login_required
-def edit_menu_all():
-    return render_template('edit_menu_all.html')
-
 @app.route('/edit_menu')
 @login_required
 def edit_menu():
