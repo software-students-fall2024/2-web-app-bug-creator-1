@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Menu Options</title>
+    <link rel="stylesheet" href="{{url_for('static',filename='main_page.css')}}">
+</head>
+<body>
+    <div class="container">
+        <h1>Edit Menu Options</h1>
+        <div class="button-container">
+            <a href="{{ url_for('edit_menu') }}" class="menu-button dashboard-button">Show by Categories</a>
+            <!-- Add more buttons for other menu editing options here -->
+        </div>
+        <a href="{{ url_for('main_page') }}" class="back-button logout-button">Back to Dashboard</a>
+    </div>
+</body>
+</html>
