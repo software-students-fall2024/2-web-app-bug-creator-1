@@ -1,10 +1,5 @@
 # Web Application Exercise
 
-use pipenv install to get all packages.
-
-username: manager
-password: 12345
-
 A little exercise to build a web application following an agile development process. See the [instructions](instructions.md) for more detail.
 
 ## Product vision statement
@@ -15,10 +10,12 @@ We implement a mobile manager system for a restaurant manager to edit the menu, 
 
 1. As a restaurant manager, I want to see all the orders I made, so I can calculate the total revenue.
 2. As a restaurant manager, I want to add new dish to the menu so that I can attract more customers.
-3. As a restaurant manager, I want to mark dish as unavailable when some ingredients are out of stock so that customer will not make mistakes.
+3. As a restaurant manager, I want to add new category to the menu so that I can organize the menu better.
 4. As a restaurant manager, I want to change the price of the dish so that I can attract more customers.
 5. As a restaurant manager, I want to delete some unpopular dishes from the menu so that I can focus on the most profitable ones.
 6. As a restaurant manager, I want only myself are able to login so that no other people can change the menu.
+7. As a restaurant manager, I want to delete category from the menu so that I can better organize the menu.
+8. As a restaurant manager, I want to change the name of the current dish so that it might attract more customers to try it.
 
 Link to the Issues page:
 
@@ -26,7 +23,20 @@ https://github.com/software-students-fall2024/2-web-app-bug-creator-1/issues
 
 ## Steps necessary to run the software
 
-See instructions. Delete this line and place instructions to download, configure, and run the software here.
+1. git clone the repository
+2. cd into the repository
+3. in the terminal, type in 'pipenv install' to install all the packages
+4. create a .env file with the following: (please do not change anything in the .env file, since our system currently only allow one user to login, and its information is stored in our database.)
+```env
+MONGO_DBNAME=restaurantDB
+MONGO_URI=mongodb+srv://mbw3047256:12345@project2.vvcih.mongodb.net/
+FLASK_APP=app.py
+FLASK_ENV=development
+FLASK_PORT=5000
+```
+5. in terminal, type in 'pipenv shell' to open the virtual environment
+6. in terminal, type in 'pipenv run python app.py' to run the application
+7. in the login page, the username is 'manager' and the password is '12345'
 
 ## Task boards
 
