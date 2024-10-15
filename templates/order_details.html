@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Details</title>
+    <link rel="stylesheet" href="{{url_for('static',filename='main_page.css')}}">
+    <link rel="stylesheet" href="{{url_for('static',filename='check_orders.css')}}">
+    <style>
+        .view-details {
+            display: inline-block;
+            padding: 5px 10px;
+            background-color: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            margin-top: 10px;
+        }
+
+        .view-details:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Order #{{ order.id }} Details</h1>
+        <p>Time: {{ order.time }}</p>
+        <h3>Items:</h3>
+        <ul>
+            {% for item in order.item %}
+                <li>{{ item.name }} - Quantity: {{ item.quantity }} - ${{ item.price }}</li>
+            {% endfor %}
+        </ul>
+        <p>Total: ${{ order.total_price }}</p>
+        <a href="{{ url_for('check_orders') }}" class="dashboard-button">Back to Orders</a>
+    </div>
+</body>
+</html>

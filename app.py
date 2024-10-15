@@ -6,6 +6,8 @@ import os
 from dotenv import load_dotenv
 from pymongo import MongoClient
 from bson import ObjectId
+import datetime
+from datetime import datetime
 
 
 
@@ -13,6 +15,7 @@ load_dotenv()
 
 
 app = Flask(__name__)
+
 
 
 
@@ -76,8 +79,25 @@ def main_page():
 @app.route('/check_orders')
 @login_required
 def check_orders():
-    # For now, this just renders a new template
-    return render_template('check_orders.html')
+    # Fetch all orders from the database
+    orders = list(db.customer_orders.find().sort('date', -1))  # Sort by date, most recent first
+    
+    # Process orders for display
+    for order in orders:
+        order['_id'] = str(order['_id'])
+        if isinstance(order.get('date'), datetime):
+            order['date'] = order['date'].strftime('%Y-%m-%d %H:%M:%S')
+        elif isinstance(order.get('date'), str):
+            # If date is already a string, leave it as is
+            pass
+        else:
+            order['date'] = 'Date not available'
+        
+        # Ensure items is a list
+        if not isinstance(order.get('items'), list):
+            order['items'] = []
+
+    return render_template('check_orders.html', orders=orders)
 
 @app.route('/edit_menu')
 @login_required
@@ -260,6 +280,16 @@ def delete_category():
     except Exception as e:
         print(f"Error deleting category: {e}")
         return jsonify({'success': False, 'message': 'An error occurred while deleting the category'}), 500
+
+@app.route('/order_details/<int:order_id>')
+@login_required
+def order_details(order_id):
+    order = db.customer_orders.find_one({'id': order_id})
+    if order:
+        return render_template('order_details.html', order=order)
+    else:
+        flash('Order not found', 'error')
+        return redirect(url_for('check_orders'))
 
 if __name__=='__main__':
     app.run(debug=True)
