@@ -79,21 +79,17 @@ def main_page():
 @app.route('/check_orders')
 @login_required
 def check_orders():
-    # Fetch all orders from the database
-    orders = list(db.customer_orders.find().sort('date', -1))  # Sort by date, most recent first
+    orders = list(db.customer_orders.find().sort('date', -1)) 
     
-    # Process orders for display
     for order in orders:
         order['_id'] = str(order['_id'])
         if isinstance(order.get('date'), datetime):
             order['date'] = order['date'].strftime('%Y-%m-%d %H:%M:%S')
         elif isinstance(order.get('date'), str):
-            # If date is already a string, leave it as is
             pass
         else:
             order['date'] = 'Date not available'
         
-        # Ensure items is a list
         if not isinstance(order.get('items'), list):
             order['items'] = []
 
@@ -107,12 +103,9 @@ def edit_menu_all():
 @app.route('/edit_menu')
 @login_required
 def edit_menu():
-    # Get all categories from the database
     categories = db.list_collection_names()
-    # Exclude system collections and other non-category collections
     categories = [cat for cat in categories if not cat.startswith('system.') and cat != 'users' and cat != 'categories' and cat != 'customer_orders']
     
-    # Convert underscores to spaces and capitalize for display
     categories = [cat.replace('_', ' ').title() for cat in categories]
     
     return render_template('edit_menu.html', categories=categories)
@@ -137,9 +130,7 @@ def get_dishes(category):
 def search_dishes():
     query = request.args.get('query', '')
     
-    # Get all categories from the database
     categories = db.list_collection_names()
-    # Exclude system collections and other non-category collections
     categories = [cat for cat in categories if not cat.startswith('system.') and cat != 'users' and cat != 'categories']
     
     results = []
@@ -156,7 +147,6 @@ def search_dishes():
 def add_dish():
     dish_data = request.json
     
-    # Validate required fields
     required_fields = ['category', 'dish_name', 'price']
     for field in required_fields:
         if field not in dish_data:
@@ -164,16 +154,13 @@ def add_dish():
     
     category = dish_data.pop('category')
     
-    # Convert price to float
     try:
         dish_data['price'] = float(dish_data['price'])
     except ValueError:
         return jsonify({'success': False, 'message': 'Invalid price format'}), 400
     
-    # Insert the new dish into the database
     result = db[category].insert_one(dish_data)
     
-    # Return the new dish details
     new_dish = db[category].find_one({'_id': result.inserted_id})
     new_dish['_id'] = str(new_dish['_id'])
     new_dish['category'] = category
@@ -189,18 +176,13 @@ def add_category():
     if not category_name:
         return jsonify({'success': False, 'message': 'Category name is required'}), 400
 
-    # Convert the category name to a valid collection name (lowercase, replace spaces with underscores)
     collection_name = category_name.lower().replace(' ', '_')
 
-    # Check if the collection already exists
     if collection_name in db.list_collection_names():
         return jsonify({'success': False, 'message': 'Category already exists'}), 400
 
-    # Create a new collection for the category
     db.create_collection(collection_name)
 
-    # Add the new category to a categories list (if you want to maintain a list of all categories)
-    # db.categories.insert_one({'name': category_name, 'collection_name': collection_name})
 
     return jsonify({'success': True, 'message': 'Category added successfully'})
 
@@ -262,7 +244,7 @@ def edit_dish():
 @login_required
 def get_categories():
     categories = db.list_collection_names()
-    categories = [cat for cat in categories if not cat.startswith('system.') and cat != 'users']
+    categories = [cat for cat in categories if not cat.startswith('system.') and cat != 'users' and cat != 'customer_orders' and cat != 'categories']
     return jsonify(categories)
 
 @app.route('/delete_category', methods=['POST'])
@@ -275,12 +257,8 @@ def delete_category():
         return jsonify({'success': False, 'message': 'Category name is required'}), 400
 
     try:
-        # Drop the collection
         db[category].drop()
         
-        # Remove the category from the categories list (if you're maintaining one)
-        # db.categories.delete_one({'collection_name': category})
-
         return jsonify({'success': True, 'message': 'Category deleted successfully'})
     except Exception as e:
         print(f"Error deleting category: {e}")

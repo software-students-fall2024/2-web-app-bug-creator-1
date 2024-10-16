@@ -110,9 +110,16 @@ document.addEventListener('DOMContentLoaded', function() {
                         dishesContainer.appendChild(dishElement);
                     });
                     setupDeleteButtons();
+                    setupEditButtons();
+                
+                    const categoryButtons = document.querySelectorAll('.category-btn');
+                    categoryButtons.forEach(btn => btn.classList.remove('active'));
+                    currentCategory = null;
                 });
         } else if (currentCategory) {
             loadDishes(currentCategory);
+        } else {
+            dishesContainer.innerHTML = '<p>No dishes found. Please try again.</p>';
         }
     });
 

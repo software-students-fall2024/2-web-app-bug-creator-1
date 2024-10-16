@@ -26,7 +26,7 @@ https://github.com/software-students-fall2024/2-web-app-bug-creator-1/issues
 1. git clone the repository
 2. cd into the repository
 3. in the terminal, type in 'pipenv install' to install all the packages
-4. create a .env file with the following: (please do not change anything in the .env file, since our system currently only allow one user to login, and its information is stored in our database.)
+4. create a .env file with the following:
 ```env
 MONGO_DBNAME=restaurantDB
 MONGO_URI=mongodb+srv://mbw3047256:12345@project2.vvcih.mongodb.net/
